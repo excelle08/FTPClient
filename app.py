@@ -15,4 +15,4 @@ if __name__ == '__main__':
     app.template_folder = os.path.abspath('.') + '/web-ui/templates'
     app.config['debug'] = True
     app.secret_key = 'dsafdsagteraf'
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='127.0.0.1')
