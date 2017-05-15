@@ -257,6 +257,15 @@ class FTPClientConnection:
             raise FTPException('CWD error: %d - %s' % (resp[0], resp[1]))
         return resp[1]
 
+    def direct_retr(self, filename):
+        port = self.init_data_port()
+        resp_s = self.simple_command('RETR %s' % filename)
+        if len(resp_s) > 0 and resp_s[0][0] == 550:
+            raise FTPException('RETR Error: %s' % (resp_s[0][1]))
+        data = self.prepare_data()
+
+        return data
+
     def retr(self, filename, dest):
         """
         RETR: retrieve file
@@ -264,14 +273,21 @@ class FTPClientConnection:
         :param dest: Destination
         :return: length of data retrieved
         """
-        port = self.init_data_port()
-        resp_s = self.simple_command('RETR %s' % filename)
-        if len(resp_s) > 0 and resp_s[0][0] == 550:
-            raise FTPException('RETR Error: %s' % (resp_s[0][1]))
-        data = self.prepare_data()
+        data = self.direct_retr(filename)
         with open(dest, 'wb') as f:
             f.write(data)
 
+        return len(data)
+
+    def direct_store(self, data, dest):
+        port = self.init_data_port()
+        resp = self.simple_command('STOR %s' % dest)[0]
+        if resp[0] == 150:
+            self.prepare_data(data)
+        else:
+            if self.data_conn:
+                self.data_conn.close()
+            raise FTPException('STOR error: %s' % resp[1])
         return len(data)
 
     def stor(self, source, dest):
@@ -286,15 +302,7 @@ class FTPClientConnection:
             raise FTPException('%s does not exist.' % source)
         with open(source, 'rb') as f:
             data = f.read()
-        port = self.init_data_port()
-        resp = self.simple_command('STOR %s' % dest)[0]
-        if resp[0] == 150:
-            self.prepare_data(data)
-        else:
-            if self.data_conn:
-                self.data_conn.close()
-            raise FTPException('STOR error: %s' % resp[1])
-        return len(data)
+        return self.direct_store(data, dest)
 
     def dele(self, path):
         """
@@ -306,6 +314,30 @@ class FTPClientConnection:
         if resp[0] != 250:
             raise FTPException('DELE Error: (%d) %s' % (resp[0], resp[1]))
         return resp[1]
+
+    def mkdir(self, path):
+        """
+        Make directory
+        :param path:
+        :return:
+        """
+        resp = self.simple_command('MKD %s' % path)[0]
+        if resp[0] != 250:
+            raise FTPException('MKD error: (%d) %s' % (resp[0], resp[1]))
+        return resp[1]
+
+
+    def rmdir(self, path):
+        """
+        Remove directory
+        :param path:
+        :return:
+        """
+        resp = self.simple_command('RMD %s' % path)[0]
+        if resp[0] != 250:
+            raise FTPException('RMD error: (%d) %s' % (resp[0], resp[1]))
+        return resp[1]
+
 
     def rename(self, orig, new):
         """
