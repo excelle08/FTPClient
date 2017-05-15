@@ -8,7 +8,6 @@ from random import random
 from config import get_config
 import json, time, hashlib
 
-
 app = Flask(__name__)
 conns = dict()
 
@@ -30,11 +29,11 @@ def return_json(obj):
     return Response(json.dumps(obj), mimetype='application/json')
 
 
-@app.errorhandler(FTPException)
-def handle_ftp_exception(error):
-    resp = jsonify(error=500, message=error.message, data='')
-    resp.status_code = 500
-    return resp
+#@app.errorhandler(FTPException)
+#def handle_ftp_exception(error):
+#    resp = jsonify(error=500, message=error.message, data='')
+#    resp.status_code = 500
+#    return resp
 
 
 @app.route('/', methods=['GET'])
@@ -56,9 +55,14 @@ def login_api():
                                password=get_config('password'))
     id = get_session_id()
     session['sessionid'] = id
-    if 'username' in request.form:
-        conn.username = request.form['username']
-        conn.password = request.form['password']
+    # if 'username' in request.form:
+    #    conn.username = request.form['username']
+    #    conn.password = request.form['password']
+    data = json.loads(request.data.decode('utf-8'))
+    conn.server = data['server_ip']
+    conn.command_port = data['server_port']
+    conn.username = data['username']
+    conn.password = data['password']
 
     response = conn.login()
     conns[id] = conn

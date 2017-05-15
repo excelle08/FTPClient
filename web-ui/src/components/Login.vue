@@ -16,7 +16,7 @@
           <label class="label">密码</label>
           <input type="password" class="input" v-model="password">
           <div class="button-container block">
-            <a class="button is-primary">确认登陆</a>
+            <a class="button is-primary" @click="login" v-bind:class="{ 'is-loading': is_login }">确认登陆</a>
             <a class="button is-danger" @click="clear">清空</a>
           </div>
         </div>
@@ -34,7 +34,8 @@ export default {
       server_ip: '',
       server_port: '',
       username: '',
-      password: ''
+      password: '',
+      is_login: false
     }
   },
   methods: {
@@ -43,6 +44,26 @@ export default {
       this.server_port = ''
       this.username = ''
       this.password = ''
+    },
+    login () {
+      this.is_login = true
+      this.$http.post('user',
+        {
+          'server_ip': this.server_ip,
+          'server_port': this.server_port,
+          'username': this.username,
+          'password': this.password
+        })
+      .then(response => response.json())
+      .then((json) => {
+        this.is_login = false
+        if (json.code === 230) {
+          // success
+          console.log('success')
+        } else {
+          console.log(json)
+        }
+      })
     }
   }
 }
