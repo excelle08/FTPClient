@@ -4,7 +4,7 @@ import router from './router'
 import VueResource from 'vue-resource'
 
 Vue.use(VueResource)
-Vue.http.options.root = '/fpt'
+Vue.http.options.root = '/ftp'
 
 Vue.config.productionTip = false
 
