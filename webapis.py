@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, Response, redirect, session
+from flask import Flask, Response, redirect, session, abort
 from flask import request, jsonify, make_response, render_template
 from ftp_core import FTPException, FTPClientConnection
 from model import File
@@ -14,9 +14,12 @@ conns = dict()
 
 def get_conn():
     if 'sessionid' not in session:
-        return None
+        # Fix value is None
+        abort(403)
+        # return None
     if session['sessionid'] not in conns:
-        return None
+        abort(403)
+        # return None
     return conns[session['sessionid']]
 
 
@@ -29,8 +32,8 @@ def return_json(obj):
     return Response(json.dumps(obj), mimetype='application/json')
 
 
-#@app.errorhandler(FTPException)
-#def handle_ftp_exception(error):
+# @app.errorhandler(FTPException)
+# def handle_ftp_exception(error):
 #    resp = jsonify(error=500, message=error.message, data='')
 #    resp.status_code = 500
 #    return resp

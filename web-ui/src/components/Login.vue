@@ -1,5 +1,6 @@
 <template>
   <div id="login">
+    <nav-bar></nav-bar>
     <div class="columns">
       <div class="column is-0-mobile is-one-quarter-tablet is-one-quarter-desktop"></div>
       <div class="column is-12-mobile is-one-half-tablet is-one-half-desktop">
@@ -27,8 +28,13 @@
 </template>
 
 <script>
+import NavBar from '@/components/Nav'
+
 export default {
   name: 'login',
+  components: {
+    NavBar
+  },
   data () {
     return {
       server_ip: '',
