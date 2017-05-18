@@ -23,7 +23,17 @@ export default {
   ],
   methods: {
     logout () {
-      this.$router.replace({path: '/'})
+      this.$http.get('logout')
+      .then(response => response.json())
+      .then(json => {
+        if (json.status === 'OK') {
+          // success
+          this.$router.replace({path: '/'})
+        } else {
+          // fail
+          console.log(json)
+        }
+      })
     }
   }
 }

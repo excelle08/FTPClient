@@ -34,7 +34,6 @@ recv_timeout = 0.3
 
 
 class FTPClientConnection:
-
     @staticmethod
     def parse_port(upper, lower):
         """
@@ -84,7 +83,6 @@ class FTPClientConnection:
                     break
             else:
                 break
-
 
     def __del__(self):
         """
@@ -326,7 +324,6 @@ class FTPClientConnection:
             raise FTPException('MKD error: (%d) %s' % (resp[0], resp[1]))
         return resp[1]
 
-
     def rmdir(self, path):
         """
         Remove directory
@@ -337,7 +334,6 @@ class FTPClientConnection:
         if resp[0] != 250:
             raise FTPException('RMD error: (%d) %s' % (resp[0], resp[1]))
         return resp[1]
-
 
     def rename(self, orig, new):
         """

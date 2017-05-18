@@ -124,7 +124,7 @@ def print_working_dir():
     return return_json({'working_dir': conn.pwd()[1]})
 
 
-@app.route('/logout')
+@app.route('/ftp/logout')
 def logout():
     del conns[session['sessionid']]
     return return_json({'status': 'OK'})
