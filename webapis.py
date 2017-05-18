@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, Response, redirect, session, abort
+from flask import Flask, Response, redirect, session, abort, jsonify
 from flask import request, jsonify, make_response, render_template
 from ftp_core import FTPException, FTPClientConnection
 from model import File
@@ -29,7 +29,9 @@ def get_session_id():
 
 
 def return_json(obj):
-    return Response(json.dumps(obj), mimetype='application/json')
+    # Use jsonify instead of json.dumps()
+    return jsonify(obj)
+    # return Response(json.dumps(obj), mimetype='application/json')
 
 
 # @app.errorhandler(FTPException)

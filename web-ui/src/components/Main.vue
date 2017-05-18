@@ -1,6 +1,6 @@
 <template>
   <div id="main">
-    <nav-bar></nav-bar>
+    <nav-bar exit="true"></nav-bar>
     <p>hello world</p>
   </div>
 </template>
