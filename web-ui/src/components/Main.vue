@@ -1,17 +1,18 @@
 <template>
   <div id="main">
     <nav-bar exit="true"></nav-bar>
-    <p>hello world</p>
+    <file-list></file-list>
   </div>
 </template>
 
 <script>
 import NavBar from '@/components/Nav'
+import FileList from '@/components/FileList'
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    FileList
   }
 }
 </script>
-
