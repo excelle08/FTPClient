@@ -59,7 +59,7 @@ export default {
         this.is_login = false
         if (json.code === 230) {
           // success
-          console.log('success')
+          this.$router.push({path: '/path'})
         } else {
           console.log(json)
         }
