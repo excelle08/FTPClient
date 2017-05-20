@@ -46,9 +46,15 @@ while True:
             print(conn.rename(args[1], args[2]))
         elif cmd.lower() == 'help':
             help()
+        elif cmd.lower() == 'mkdir' or cmd.lower() == 'mkd':
+            print(conn.mkdir(args[1]))
+        elif cmd.lower() == 'rmdir' or cmd.lower() == 'rmd':
+            print(conn.rmdir(args[1]))
         elif cmd.lower() == 'exit':
             break
         else:
             print('%s is not implemented in this client.' % cmd)
     except ftp_core.FTPException as e:
         print(e)
+    except IndexError:
+        print('Too few arguments: %s' % str(args))

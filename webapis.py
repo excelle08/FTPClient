@@ -30,21 +30,28 @@ def return_json(obj):
     return Response(json.dumps(obj), mimetype='application/json')
 
 
+def return_html(file):
+    content = ''
+    with open('web-ui/templates/' + file, 'r') as f:
+        content = f.read()
+    return content
+
+
 @app.errorhandler(FTPException)
 def handle_ftp_exception(error):
-    resp = jsonify(error=500, message=error.message, data='')
+    resp = jsonify(error=500, message=str(error), data='')
     resp.status_code = 500
     return resp
 
 
 @app.route('/', methods=['GET'])
 def index_page():
-    return render_template('index.html')
+    return return_html('index.html')
 
 
 @app.route('/login', methods=['GET'])
 def login_page():
-    return render_template('login.html')
+    return return_html('login.html')
 
 
 @app.route('/ftp/user', methods=['POST'])
@@ -62,7 +69,7 @@ def login_api():
 
     response = conn.login()
     conns[id] = conn
-    return return_json({'code': response[0], 'message': response[1]})
+    return return_json(FTPClientConnection.api_response(response))
 
 
 @app.route('/ftp/root/', methods=['GET'])
@@ -73,6 +80,7 @@ def list_root():
 @app.route('/ftp/root/<path:path>', methods=['GET'])
 def list_or_retr(path):
     conn = get_conn()
+    path = FTPClientConnection.to_full_path(path)
     # Do list if the arg indicates directory:
     if path[-1] == '/':
         conn.cwd(path)
@@ -86,27 +94,38 @@ def list_or_retr(path):
             file_list.append(f.dict)
         return return_json(file_list)
     else:
-        return conn.direct_retr(path)
+        directory, file = FTPClientConnection.split_dir(path)
+        print(directory)
+        conn.cwd(directory)
+        return conn.direct_retr(file)
 
 
 @app.route('/ftp/root/<path:path>', methods=['PUT'])
 def put_file(path):
     conn = get_conn()
+    path = FTPClientConnection.to_full_path(path)
     if path[-1] == '/':
         resp = conn.mkdir(path)
-        return return_json({'code': resp[0], 'message': resp[1]})
+        return return_json(FTPClientConnection.api_response(resp))
     else:
-        pass
+        directory, file = FTPClientConnection.split_dir(path)
+        conn.cwd(directory)
+        resp = conn.direct_store(request.data, file)
+        return return_json({'size': resp})
 
 
 @app.route('/ftp/root/<path:path>', methods=['DELETE'])
 def delete_file(path):
     conn = get_conn()
+    path = FTPClientConnection.to_full_path(path)
     if path[-1] == '/':
         resp = conn.rmdir(path)
-        return return_json({'code': resp[0], 'message': resp[1]})
+        return return_json(FTPClientConnection.api_response(resp))
     else:
-        pass
+        directory, file = FTPClientConnection.split_dir(path)
+        conn.cwd(directory)
+        resp = conn.dele(file)
+        return return_json(FTPClientConnection.api_response(resp))
 
 
 @app.route('/ftp/pwd', methods=['GET'])

@@ -25,7 +25,7 @@ class File():
         self.month = fields[5]
         self.day = fields[6]
         self.time = fields[7]
-        self.time = fields[8]
+        self.name = fields[8]
 
     @property
     def dict(self):

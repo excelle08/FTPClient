@@ -45,6 +45,25 @@ class FTPClientConnection:
         """
         return int(upper) * 256 + int(lower)
 
+    @staticmethod
+    def to_full_path(path):
+        if path[0] == '/':
+            return path
+        else:
+            return '/' + path
+
+    @staticmethod
+    def api_response(resp):
+        return {
+            'code': resp[0],
+            'message': resp[1]
+        }
+
+    @staticmethod
+    def split_dir(path):
+        components = path.split('/')
+        return '/'.join(components[:-1]), components[-1]
+
     def __init__(self, server, control_port=21, data_port=20, com_mode=ComMode.Passive,
                  data_repr=DataRepr.Binary, transfer_mode=TransferMode.Stream, username='Anonymous',
                  password=''):
@@ -163,6 +182,7 @@ class FTPClientConnection:
         :return: The data received
         """
         if self.com_mode == ComMode.Passive:
+            self.data_conn.setblocking(0)
             recv_data = []
             if data:
                 self.data_conn.send(data)
@@ -243,6 +263,8 @@ class FTPClientConnection:
         """
         port = self.init_data_port()
         resp = self.simple_command('LIST')[0]
+        if resp[0] // 100 == 5:
+            raise FTPException('List error: %d - %s' % (resp[0], resp[1]))
         data = self.prepare_data()
 
         return data.decode('utf-8')
@@ -260,7 +282,7 @@ class FTPClientConnection:
     def direct_retr(self, filename):
         port = self.init_data_port()
         resp_s = self.simple_command('RETR %s' % filename)
-        if len(resp_s) > 0 and resp_s[0][0] == 550:
+        if len(resp_s) > 0 and resp_s[0][0] // 100 == 5:
             raise FTPException('RETR Error: %s' % (resp_s[0][1]))
         data = self.prepare_data()
 
