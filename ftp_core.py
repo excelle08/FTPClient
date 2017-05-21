@@ -54,6 +54,11 @@ class FTPClientConnection:
 
     @staticmethod
     def api_response(resp):
+        if isinstance(resp, str):
+            return {
+                'status': 1,
+                'message': resp
+            }
         return {
             'code': resp[0],
             'message': resp[1]

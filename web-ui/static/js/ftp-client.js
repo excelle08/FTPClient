@@ -102,7 +102,25 @@ function initFileList(files) {
             },
             
             delete: function (file) {
-
+                var _this = this;
+                if (file.name == '..') {
+                    return alert('此项目用于返回上一级目录,不能删除');
+                }
+                if (window.confirm('确定要删除文件 ' + file.name + ' 吗?')) {
+                    url = '/ftp/root' + this.working_dir + file.name;
+                    if (file.mode[0] == 'd') {
+                        url = url + '/';
+                    }
+                    deleteApi(url, {},
+                        function (resp, __) {
+                            if (resp.status && resp.status == 1) {
+                                alert('删除成功');
+                            } else {
+                                alert(resp.message);
+                            }
+                            _this.refresh();
+                        })
+                }
             },
 
             upload: function () {

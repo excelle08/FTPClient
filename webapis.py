@@ -119,7 +119,8 @@ def delete_file(path):
     conn = get_conn()
     path = FTPClientConnection.to_full_path(path)
     if path[-1] == '/':
-        resp = conn.rmdir(path)
+        dir_name = path.split('/')[-2]
+        resp = conn.rmdir(dir_name)
         return return_json(FTPClientConnection.api_response(resp))
     else:
         directory, file = FTPClientConnection.split_dir(path)
