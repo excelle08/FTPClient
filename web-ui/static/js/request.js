@@ -52,6 +52,10 @@ function putApi(url, data, callback) {
     _ajax('PUT', url, data, callback);
 }
 
+function putRawData(url, data, callback) {
+    rawApi('PUT', url, data, callback);
+}
+
 function deleteApi(url, data, callback) {
     if (arguments.length === 2) {
         callback = data;
@@ -77,6 +81,26 @@ function jsonApi(method, url, object, callback) {
         data: JSON.stringify(object),
         contentType: 'application/json',
         dataType: 'json'
+    }).done(function (r) {
+        if (r && (r.message || r.error)) {
+            return callback && callback(r);
+        }
+        return callback && callback(null, r);
+    }).fail(function (jqXHR, textStatus) {
+        return callback && callback({
+                error: 'HTTP ' + jqXHR.status,
+                message: 'Network error - HTTP ' + jqXHR.status
+            });
+    });
+}
+
+function rawApi(method, url, data, callback) {
+    jQuery.ajax({
+        type: method,
+        url: url,
+        data: data,
+        contentType: 'application/octet-stream',
+        dataType: 'text'
     }).done(function (r) {
         if (r && (r.message || r.error)) {
             return callback && callback(r);
@@ -129,4 +153,11 @@ function reloadArray (target, data) {
     for(var i in data) {
         target.push(data[i]);
     }
+}
+
+function roundUp (number, precision) {
+    if (!precision) {
+        precision = 100;
+    }
+    return Math.round(number * precision) / precision;
 }

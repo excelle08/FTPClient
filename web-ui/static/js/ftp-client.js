@@ -31,14 +31,24 @@ $(document).ready(function() {
 
 function initFileList(files) {
     var vm = new Vue({
-        el: '#files',
+        el: '#ftp-client-main',
         data: {
             files: files,
             working_dir: current_dir
         },
         methods: {
-            getDate: function(file) {
-                return ' '.join([file.month, file.day, file.time]);
+            getSize: function (size) {
+                var result = '';
+                if (size >= 1024 && size < 1048576) {
+                    result = roundUp(size / 1024, 100) + ' KB';
+                } else if (size >= 1048576 && size < 1048576 * 1024) {
+                    result = roundUp(size / 1048576, 100) + ' MB';
+                } else if (size >= 1048576 * 1024) {
+                    result = roundUp(size / 1048576 / 1024, 100) + ' GB';
+                } else {
+                    result = size + ' B';
+                }
+                return result;
             },
             
             access: function(file) {
@@ -58,7 +68,20 @@ function initFileList(files) {
                     }
                     this.working_dir = new_dir;
                     current_dir = new_dir;
-                    getApi('/ftp/root' + new_dir, {}, function (err, r) {
+                    this.refresh();
+                } else {
+                    var url = [
+                        window.location.protocol, '//',
+                        window.location.host, '/ftp/root',
+                        this.working_dir, file.name
+                    ].join('');
+                    window.open(url, '_blank');
+                }
+            },
+
+            refresh: function () {
+                var _this = this;
+                getApi('/ftp/root' + this.working_dir, {}, function (err, r) {
                         if (err) {
                             alert(err.message);
                         } else {
@@ -68,14 +91,6 @@ function initFileList(files) {
                             }
                         }
                     });
-                } else {
-                    var url = [
-                        window.location.protocol, '//',
-                        window.location.host, '/ftp/root',
-                        this.working_dir, file.name
-                    ].join('');
-                    window.open(url, '_blank');
-                }
             },
             
             rename: function(file) {
@@ -88,7 +103,35 @@ function initFileList(files) {
             
             delete: function (file) {
 
+            },
+
+            upload: function () {
+                var f = $('#file-uploader')[0];
+                var data = '';
+                var name = '';
+                var _this = this;
+                if (f.files && f.files[0]) {
+                    var file = f.files[0];
+                    var fr = new FileReader();
+                    var wd = this.working_dir;
+                    name = file.name;
+                    fr.onload = function () {
+                        data = fr.result;
+                        putRawData('/ftp/root' + wd + file.name, data,
+                            function (err, r) {
+                                if (err) {
+                                    alert(err.message);
+                                } else {
+                                    alert('上传成功');
+                                    _this.refresh();
+                                }
+                        });
+                    };
+                    fr.readAsBinaryString(file);
+                } else {
+                    alert('没有选定文件');
+                }
             }
         }
-    })
+    });
 }

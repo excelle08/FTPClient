@@ -52,13 +52,13 @@
             <div class="col-sm-3 col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
                     <li role="presentation" class="active"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">文件列表</a></li>
-                    <li role="presentation"><a href="#teachers" aria-controls="teachers" role="tab" data-toggle="tab">上传</a></li>
+                    <li role="presentation"><a href="#upload" aria-controls="upload" role="tab" data-toggle="tab">上传</a></li>
                     <li role="presentation"><a href="#courses" aria-controls="courses" role="tab" data-toggle="tab">3</a></li>
                     <li role="presentation"><a href="#group" aria-controls="group" role="tab" data-toggle="tab">4</a></li>
                     <li role="presentation"><a href="#grades" aria-controls="grades" role="tab" data-toggle="tab">5</a></li>
                 </ul>
             </div>
-            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="ftp-client-main">
                 <div class="row placeholders tab-content">
                     <div role="tabpanel" class="tab-pane active" id="files">
                         <div class="row">
@@ -82,9 +82,11 @@
                                         <td>{{file.link_num}}</td>
                                         <td>{{file.owner}}</td>
                                         <td>{{file.group}}</td>
-                                        <td>{{file.length}}</td>
+                                        <td v-html="getSize(file.length)"></td>
                                         <td>{{file.month + ' ' + file.day + ' ' + file.time}}</td>
-                                        <td><a href="#" v-on:click="access(file)">{{file.name}}</a></td>
+                                        <td><a href="#" v-on:click="access(file)">
+                                            <span v-if="file.mode[0] == 'd'" class="glyphicon glyphicon-folder-open"></span>
+                                            &nbsp;{{file.name}}</a></td>
                                         <td>
                                             <a href="#" v-on:click="rename(file)">
                                                 <span class="glyphicon glyphicon-pencil"></span>&nbsp;Rename
@@ -101,9 +103,24 @@
                             </table>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="teachers">
+                    <div role="tabpanel" class="tab-pane" id="upload">
                         <div class="row">
+                            <form class="form">
+                                <div class="form-group">
+                                    <label>上传文件: 请选择文件</label>
+                                    <input type="file" class="form-control" id="file-uploader">
+                                </div>
 
+                                <div class="form-group">
+                                    <label>当前目录: {{working_dir}}</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="button" v-on:click="upload">
+                                        <span class="glyphicon glyphicon-ok"></span> 上传
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="courses">
