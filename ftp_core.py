@@ -62,6 +62,8 @@ class FTPClientConnection:
     @staticmethod
     def split_dir(path):
         components = path.split('/')
+        if len(components) <= 2:
+            return '/', components[1]
         return '/'.join(components[:-1]), components[-1]
 
     def __init__(self, server, control_port=21, data_port=20, com_mode=ComMode.Passive,

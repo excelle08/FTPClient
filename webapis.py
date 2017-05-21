@@ -97,7 +97,7 @@ def list_or_retr(path):
         directory, file = FTPClientConnection.split_dir(path)
         print(directory)
         conn.cwd(directory)
-        return conn.direct_retr(file)
+        return Response(conn.direct_retr(file), mimetype='application/octet-stream')
 
 
 @app.route('/ftp/root/<path:path>', methods=['PUT'])
