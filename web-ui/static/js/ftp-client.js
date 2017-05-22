@@ -92,13 +92,41 @@ function initFileList(files) {
                         }
                     });
             },
-            
-            rename: function(file) {
-                
-            },
-            
+
             move: function (file) {
-                
+                var new_name = window.prompt('请输入文件' + file.name + '的新文件名:');
+                var _this = this;
+                if (!new_name) {
+                    return;
+                }
+                postApi('/ftp/move', {
+                    filename: file.name,
+                    new_path: new_name
+                }, function (resp, __) {
+                    if (resp.status && resp.status == 1) {
+                        alert('移动完成');
+                        _this.refresh();
+                    } else {
+                        alert(resp.message);
+                    }
+                });
+            },
+
+            make_dir: function () {
+                var dir_name = window.prompt('请输入文件夹名称:');
+                var _this = this;
+                if (!dir_name) {
+                    return;
+                }
+                var path = this.working_dir + dir_name + '/';
+                putApi('/ftp/root' + path, {}, function (err, r) {
+                    _this.refresh();
+                    if (err.status && err.status == 1) {
+                        alert('创建成功');
+                    } else {
+                        alert(err.message);
+                    }
+                });
             },
             
             delete: function (file) {

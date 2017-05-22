@@ -129,6 +129,15 @@ def delete_file(path):
         return return_json(FTPClientConnection.api_response(resp))
 
 
+@app.route('/ftp/move', methods=['POST'])
+def move_file():
+    conn = get_conn()
+    filename = request.form['filename']
+    new_path = request.form['new_path']
+    resp = conn.rename(filename, new_path)
+    return return_json(FTPClientConnection.api_response(resp))
+
+
 @app.route('/ftp/pwd', methods=['GET'])
 def print_working_dir():
     conn = get_conn()

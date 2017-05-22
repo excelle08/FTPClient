@@ -53,9 +53,6 @@
                 <ul class="nav nav-sidebar">
                     <li role="presentation" class="active"><a href="#files" aria-controls="files" role="tab" data-toggle="tab">文件列表</a></li>
                     <li role="presentation"><a href="#upload" aria-controls="upload" role="tab" data-toggle="tab">上传</a></li>
-                    <li role="presentation"><a href="#courses" aria-controls="courses" role="tab" data-toggle="tab">3</a></li>
-                    <li role="presentation"><a href="#group" aria-controls="group" role="tab" data-toggle="tab">4</a></li>
-                    <li role="presentation"><a href="#grades" aria-controls="grades" role="tab" data-toggle="tab">5</a></li>
                 </ul>
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="ftp-client-main">
@@ -63,7 +60,9 @@
                     <div role="tabpanel" class="tab-pane active" id="files">
                         <div class="row">
                             <table class="table table-striped">
-                                <caption>当前目录: {{working_dir}}</caption>
+                                <caption>
+                                    <a href="#" v-on:click="make_dir"><span class="glyphicon glyphicon-plus-sign"></span> 新建文件夹</a>
+                                    当前目录: {{working_dir}}</caption>
                                 <thead>
                                     <tr>
                                         <th>权限</th>
@@ -88,11 +87,8 @@
                                             <span v-if="file.mode[0] == 'd'" class="glyphicon glyphicon-folder-open"></span>
                                             &nbsp;{{file.name}}</a></td>
                                         <td>
-                                            <a href="#" v-on:click="rename(file)">
-                                                <span class="glyphicon glyphicon-pencil"></span>&nbsp;Rename
-                                            </a>
                                             <a href="#" v-on:click="move(file)">
-                                                <span class="glyphicon glyphicon-transfer"></span>&nbsp;Move
+                                                <span class="glyphicon glyphicon-transfer"></span>&nbsp;Move/Rename
                                             </a>
                                             <a href="#" v-on:click="delete(file)">
                                                 <span class="glyphicon glyphicon-trash"></span>&nbsp;Delete
@@ -121,31 +117,6 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="courses">
-                        <div class="row">
-                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
-                                <div class="panel-group" id="courses-panel" role="tablist" aria-multiselectable="true">
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="group">
-                        <div class="row">
-
-                        </div>
-                    </div>
-
-                    <div role="tabpanel" class="tab-pane" id="grades">
-                        <div class="row">
-                            <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
-                                <div class="panel-group" id="grades-panel" role="tablist" aria-multiselectable="true">
-
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
