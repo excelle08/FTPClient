@@ -32,7 +32,7 @@ def return_json(obj):
 
 def return_html(file):
     content = ''
-    with open('web-ui/templates/' + file, 'r') as f:
+    with open('web-ui/templates/' + file, 'rb') as f:
         content = f.read()
     return content
 
